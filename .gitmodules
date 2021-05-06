@@ -1,18 +1,18 @@
-[submodule "3rdparty/Pangolin"]
-	path = 3rdparty/Pangolin
+[submodule "submodule/Pangolin"]
+	path = submodule/Pangolin
 	url = https://github.com/stevenlovegrove/Pangolin
-[submodule "3rdparty/Sophus"]
-	path = 3rdparty/Sophus
+[submodule "submodule/Sophus"]
+	path = submodule/Sophus
 	url = https://github.com/strasdat/Sophus
-[submodule "3rdparty/ceres-solver"]
-	path = 3rdparty/ceres-solver
+[submodule "submodule/ceres-solver"]
+	path = submodule/ceres-solver
 	url = https://github.com/ceres-solver/ceres-solver
-[submodule "3rdparty/g2o"]
-	path = 3rdparty/g2o
+[submodule "submodule/g2o"]
+	path = submodule/g2o
 	url = https://github.com/RainerKuemmerle/g2o
-[submodule "3rdparty/DBoW3"]
-	path = 3rdparty/DBoW3
+[submodule "submodule/DBoW3"]
+	path = submodule/DBoW3
 	url = https://github.com/rmsalinas/DBow3
-[submodule "3rdparty/googletest"]
-	path = 3rdparty/googletest
+[submodule "submodule/googletest"]
+	path = submodule/googletest
 	url = https://github.com/google/googletest.git
