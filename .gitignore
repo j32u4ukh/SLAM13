@@ -1,6 +1,4 @@
 # ===== Add by myself =====
-*.kdev4
-submodule/*
 *.ply
 
 # for vscode
