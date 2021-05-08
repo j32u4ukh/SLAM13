@@ -1,3 +1,7 @@
+### 右方程式碼縮圖(隨滾輪上下移動)
+
+設定 > 文字編輯器 > 縮圖 > Enable
+
 ### header 放到 include 資料夾，VC 找不到檔案
 
 1. 利用 Ctrl + Shift + P 開啟命令列，輸入 setting 來開啟 setting.json。應該會有多個名稱為 setting 的選項，應選擇來源為 /home/j32u4ukh/.config/Code/User/setting.json 的檔案。

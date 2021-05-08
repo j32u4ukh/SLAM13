@@ -42,6 +42,7 @@ inline void AngleAxisToQuaternion(const T *angle_axis, T *quaternion) {
         quaternion[1] = a0 * k;
         quaternion[2] = a1 * k;
         quaternion[3] = a2 * k;
+        
     } else { // in case if theta_squared is zero
         const T k(0.5);
         quaternion[0] = T(1.0);
@@ -91,7 +92,21 @@ inline void QuaternionToAngleAxis(const T *quaternion, T *angle_axis) {
 
 template<typename T>
 inline void AngleAxisRotatePoint(const T angle_axis[3], const T pt[3], T result[3]) {
+    // angle_axis <- camera, pt <- point, p -> result
+    // angle_axis: 旋轉矩陣的李代數 Φ = θ * a, θ: 角度, a: 正規化向量
+    // theta2 ＝ Φ * Φ = θ^2 * a^2 = θ^2 （∵ a 長度為 1）
     const T theta2 = DotProduct(angle_axis, angle_axis);
+
+    /* std::numeric_limits<double>::epsilon()：運行編譯程序的計算機所能識別的最小非零浮點數。
+    std::numeric_limits::min()：返回的是編譯器定義的最小的雙精度浮點數。
+
+    假設：
+    double eps = std::numeric_limits::epsilon();
+    double min = std::numeric_limits::min();
+
+    則兩者的區別是：
+    min 是編譯器認可的最小的正雙精度浮點數；
+    eps 是可以保證 1.0 + eps != 1.0 這個表達式成立的最小的正雙精度浮點數。 */
     if (theta2 > T(std::numeric_limits<double>::epsilon())) {
         // Away from zero, use the rodriguez formula
         //
@@ -112,20 +127,21 @@ inline void AngleAxisRotatePoint(const T angle_axis[3], const T pt[3], T result[
                         angle_axis[1] * theta_inverse,
                         angle_axis[2] * theta_inverse};
 
-        // Explicitly inlined evaluation of the cross product for
-        // performance reasons.
-        /*const T w_cross_pt[3] = { w[1] * pt[2] - w[2] * pt[1],
-                                  w[2] * pt[0] - w[0] * pt[2],
-                                  w[0] * pt[1] - w[1] * pt[0] };*/
+        // Explicitly inlined evaluation of the cross product for performance reasons.
+        /* const T w_cross_pt[3] = { w[1] * pt[2] - w[2] * pt[1],
+                                     w[2] * pt[0] - w[0] * pt[2],
+                                     w[0] * pt[1] - w[1] * pt[0] };*/
         T w_cross_pt[3];
         CrossProduct(w, pt, w_cross_pt);
 
-        const T tmp = DotProduct(w, pt) * (T(1.0) - costheta);
-        //    (w[0] * pt[0] + w[1] * pt[1] + w[2] * pt[2]) * (T(1.0) - costheta);
+        // (w[0] * pt[0] + w[1] * pt[1] + w[2] * pt[2]) * (T(1.0) - costheta);
+        const T tmp = DotProduct(w, pt) * (T(1.0) - costheta);        
 
+        // Rodrigues' formula: exp(θa^) = cosθI + sinθa^ + (1 - cosθ)aaT
         result[0] = pt[0] * costheta + w_cross_pt[0] * sintheta + w[0] * tmp;
         result[1] = pt[1] * costheta + w_cross_pt[1] * sintheta + w[1] * tmp;
         result[2] = pt[2] * costheta + w_cross_pt[2] * sintheta + w[2] * tmp;
+
     } else {
         // Near zero, the first order Taylor approximation of the rotation
         // matrix R corresponding to a vector w and angle w is

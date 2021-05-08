@@ -31,8 +31,8 @@ void SolveBA(BALProblem &bal_problem) {
     double *cameras = bal_problem.mutable_cameras();
 
     // Observations is 2 * num_observations long array observations
-    // [u_1, u_2, ... u_n], where each u_i is two dimensional, the x
-    // and y position of the observation.
+    // [u_1, u_2, ... u_n], where each u_i is two dimensional, 
+    // the x and y position of the observation.
     const double *observations = bal_problem.observations();
     ceres::Problem problem;
 

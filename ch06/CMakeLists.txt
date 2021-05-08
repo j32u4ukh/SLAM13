@@ -16,7 +16,7 @@ find_package(Ceres REQUIRED)
 include_directories(${CERES_INCLUDE_DIRS})
 
 # g2o
-list(APPEND CMAKE_MODULE_PATH /home/j32u4ukh/Documents/slambook2/3rdparty/g2o/cmake_modules) 
+list(APPEND CMAKE_MODULE_PATH /home/j32u4ukh/Documents/CppProjects/SLAM13/submodule/g2o/cmake_modules) 
 # set(G2O_ROOT /usr/local/include/g2o) 
 find_package(G2O REQUIRED)
 include_directories(${G2O_INCLUDE_DIRS})

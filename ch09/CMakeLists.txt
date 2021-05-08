@@ -9,7 +9,7 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 
 # g2o
-list(APPEND CMAKE_MODULE_PATH /home/j32u4ukh/Documents/CppProjects/SLAM13/3rdparty/g2o/cmake_modules) 
+list(APPEND CMAKE_MODULE_PATH /home/j32u4ukh/Documents/CppProjects/SLAM13/submodule/g2o/cmake_modules) 
 
 Find_Package(G2O REQUIRED)
 Find_Package(Eigen3 REQUIRED)

@@ -29,8 +29,15 @@ struct PoseAndIntrinsics {
     /// 將估計值放入內存
     void set_to(double *data_addr) {
         auto r = rotation.log();
-        for (int i = 0; i < 3; ++i) data_addr[i] = r[i];
-        for (int i = 0; i < 3; ++i) data_addr[i + 3] = translation[i];
+
+        for (int i = 0; i < 3; ++i){
+            data_addr[i] = r[i];
+        }
+
+        for (int i = 0; i < 3; ++i){
+            data_addr[i + 3] = translation[i];
+        }
+
         data_addr[6] = focal;
         data_addr[7] = k1;
         data_addr[8] = k2;
@@ -42,6 +49,9 @@ struct PoseAndIntrinsics {
     double k1 = 0, k2 = 0;
 };
 
+// ====================================================================================================
+/* VertexPoseAndIntrinsics 和 VertexPoint 都繼承自 BaseVertex，都是頂點，只是要最佳化的變數不同而已 */
+// ====================================================================================================
 /// 位姿加相機內參的頂點，9維，前三維為so3，接下去為t, f, k1, k2
 class VertexPoseAndIntrinsics : public g2o::BaseVertex<9, PoseAndIntrinsics> {
 public:
@@ -64,11 +74,13 @@ public:
     /// 根據估計值投影一個點
     Vector2d project(const Vector3d &point) {
         Vector3d pc = _estimate.rotation * point + _estimate.translation;
+
+        // BAL 數據的成像平面在相機光心之後，所以需要乘以 -1
         pc = -pc / pc[2];
+
         double r2 = pc.squaredNorm();
         double distortion = 1.0 + r2 * (_estimate.k1 + _estimate.k2 * r2);
-        return Vector2d(_estimate.focal * distortion * pc[0],
-                        _estimate.focal * distortion * pc[1]);
+        return Vector2d(_estimate.focal * distortion * pc[0], _estimate.focal * distortion * pc[1]);
     }
 
     virtual bool read(istream &in) {}
@@ -76,6 +88,7 @@ public:
     virtual bool write(ostream &out) const {}
 };
 
+// 路標點
 class VertexPoint : public g2o::BaseVertex<3, Vector3d> {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
@@ -95,15 +108,17 @@ public:
     virtual bool write(ostream &out) const {}
 };
 
-class EdgeProjection :
-    public g2o::BaseBinaryEdge<2, Vector2d, VertexPoseAndIntrinsics, VertexPoint> {
+class EdgeProjection : public g2o::BaseBinaryEdge<2, Vector2d, VertexPoseAndIntrinsics, VertexPoint> {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
     virtual void computeError() override {
         auto v0 = (VertexPoseAndIntrinsics *) _vertices[0];
         auto v1 = (VertexPoint *) _vertices[1];
+
+        // 根據 估計值(v1->estimate()) 投影一個點
         auto proj = v0->project(v1->estimate());
+
         _error = proj - _measurement;
     }
 
@@ -157,6 +172,7 @@ void SolveBA(BALProblem &bal_problem) {
     // vertex
     vector<VertexPoseAndIntrinsics *> vertex_pose_intrinsics;
     vector<VertexPoint *> vertex_points;
+
     for (int i = 0; i < bal_problem.num_cameras(); ++i) {
         VertexPoseAndIntrinsics *v = new VertexPoseAndIntrinsics();
         double *camera = cameras + camera_block_size * i;
@@ -182,11 +198,17 @@ void SolveBA(BALProblem &bal_problem) {
     // edge
     for (int i = 0; i < bal_problem.num_observations(); ++i) {
         EdgeProjection *edge = new EdgeProjection;
+
+        // 連接 Vertex 0, 1 的邊
         edge->setVertex(0, vertex_pose_intrinsics[bal_problem.camera_index()[i]]);
         edge->setVertex(1, vertex_points[bal_problem.point_index()[i]]);
+
         edge->setMeasurement(Vector2d(observations[2 * i + 0], observations[2 * i + 1]));
         edge->setInformation(Matrix2d::Identity());
+
+        // 利用 RobustKernelHuber 衡量誤差（減少當誤比對時，使得差距極大，誤差增長速度過快）
         edge->setRobustKernel(new g2o::RobustKernelHuber());
+
         optimizer.addEdge(edge);
     }
 
@@ -198,8 +220,11 @@ void SolveBA(BALProblem &bal_problem) {
         double *camera = cameras + camera_block_size * i;
         auto vertex = vertex_pose_intrinsics[i];
         auto estimate = vertex->estimate();
+
+        // 將 估計值(estimate) 放入內存(camera)
         estimate.set_to(camera);
     }
+
     for (int i = 0; i < bal_problem.num_points(); ++i) {
         double *point = points + point_block_size * i;
         auto vertex = vertex_points[i];

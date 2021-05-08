@@ -76,6 +76,7 @@ BALProblem::BALProblem(const std::string &filename, bool use_quaternions) {
     fclose(fptr);
 
     use_quaternions_ = use_quaternions;
+
     if (use_quaternions) {
         // Switch the angle-axis rotations to quaternions.
         num_parameters_ = 10 * num_cameras_ + 3 * num_points_;
@@ -88,6 +89,7 @@ BALProblem::BALProblem(const std::string &filename, bool use_quaternions) {
             quaternion_cursor += 4;
             original_cursor += 3;
             
+            // 取出原始數據的 original_cursor[3] ~ original_cursor[8]
             for (int j = 4; j < 10; ++j) {
                 *quaternion_cursor++ = *original_cursor++;
             }
