@@ -1,37 +1,7 @@
-## Welcome to GitHub Pages
+## SLAM Learning
 
-You can use the [editor on GitHub](https://github.com/j32u4ukh/SLAM13/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+我將在這裡把從 2021/02/27 開始學習的 SLAM 內容，嘗試以小孩子都聽得懂的方式記錄下來，日文版和英文版將分別放在下圖中的 JP 和 EN，點下去便可看到翻譯後的版本。
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+自分が 2021/02/27 から勉強している、SLAM というの内容をこれから子供さえも理解できる方法で、ここに記録して。日本語バージョンと英語バージョンは下の画像の JP と EN　のなかに、それを入れば翻訳したバージョンが見える。
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/j32u4ukh/SLAM13/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+I'll try to record the content of SLAM that I started to learn from February 27 2021, with the way which make kids can also understand. The Japanese version and the English version will put into EN and JP in the image below, click to read to the translated version.
