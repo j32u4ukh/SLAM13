@@ -6,5 +6,5 @@
 
 I'll try to record the content of SLAM that I started to learn from February 27 2021, with the way which make kids can also understand. The Japanese version and the English version will put into EN and JP in the image below, click to read to the translated version.
 
-* ![Class 1: 概論](class1.md)
+* [Class 1: 概論](https://j32u4ukh.github.io/SLAM13/class1.html)
 * 
