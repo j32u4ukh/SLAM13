@@ -5,3 +5,6 @@
 自分が 2021/02/27 から勉強している、SLAM というの内容をこれから子供さえも理解できる方法で、ここに記録して。日本語バージョンと英語バージョンは下の画像の JP と EN　のなかに、それを入れば翻訳したバージョンが見える。
 
 I'll try to record the content of SLAM that I started to learn from February 27 2021, with the way which make kids can also understand. The Japanese version and the English version will put into EN and JP in the image below, click to read to the translated version.
+
+* ![Class 1: 概論](docs/class1.md)
+* 
