@@ -27,6 +27,6 @@ SLAM 是 Simultaneous Localization and Mapping 的縮寫，譯作"同時定位�
   <tr>
     <td><a href="https://j32u4ukh.github.io/SLAM13/">上一篇</a></td>
     <td><a href="https://j32u4ukh.github.io/SLAM13/">首頁</a></td>
-    <td><a href="https://j32u4ukh.github.io/SLAM13/class1.html">下一篇</a></td>
+    <td><a href="https://j32u4ukh.github.io/SLAM13/class2.html">下一篇</a></td>
   </tr>
 </table>
