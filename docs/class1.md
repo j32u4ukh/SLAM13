@@ -15,3 +15,11 @@ p 和 p' 為空間點 S 分別映射到 A 和 B 上的點，利用 △pSp' 估�
 但在前端的估計有誤差，不斷累積便會造成 C 和 D 的位置估計產生誤差。
 
 根據 C 和 D 的誤差來修正到同一個位置時，前面的估計也會有相對應的修正，消弭前面累積的誤差。
+
+<table>
+  <tr>
+    <td><a href="https://j32u4ukh.github.io/SLAM13/">上一篇</a></td>
+    <td><a href="https://j32u4ukh.github.io/SLAM13/">首頁</a></td>
+    <td><a href="https://j32u4ukh.github.io/SLAM13/">下一篇</a></td>
+  </tr>
+</table>
