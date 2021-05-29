@@ -52,6 +52,7 @@ struct PoseAndIntrinsics {
 // ====================================================================================================
 /* VertexPoseAndIntrinsics 和 VertexPoint 都繼承自 BaseVertex，都是頂點，只是要最佳化的變數不同而已 */
 // ====================================================================================================
+
 /// 位姿加相機內參的頂點，9維，前三維為so3，接下去為t, f, k1, k2
 class VertexPoseAndIntrinsics : public g2o::BaseVertex<9, PoseAndIntrinsics> {
 public:

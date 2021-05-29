@@ -7,7 +7,6 @@ set(CMAKE_CXX_FLAGS "-O3 -std=c++11")
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-
 # g2o
 list(APPEND CMAKE_MODULE_PATH /home/j32u4ukh/Documents/CppProjects/SLAM13/submodule/g2o/cmake_modules) 
 
