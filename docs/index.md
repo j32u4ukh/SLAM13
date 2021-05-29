@@ -9,4 +9,4 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 * <a href="https://j32u4ukh.github.io/SLAM13/class1.html">Class 1: 概論</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class2.html">Class 2: 前端(視覺里程計)</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class3.html">Class 3: 後端</a>
-* <a href="https://j32u4ukh.github.io/SLAM13/class4.html">Class 4: 回路檢測</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/class4.html">Class 4: 回路檢測 & 建圖</a>
