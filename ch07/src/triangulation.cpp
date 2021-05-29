@@ -232,6 +232,7 @@ void triangulation(
         x.at<float>(1, 0),
         x.at<float>(2, 0)
         );
+        
         points.push_back(p);
     }
 }
