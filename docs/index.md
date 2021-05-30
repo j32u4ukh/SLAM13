@@ -6,7 +6,8 @@
 
 I'll try to record the content of SLAM that I started to learn from February 27 2021, with the way which make kids can also understand. The Japanese version and the English version will put into EN and JP in the image below, click to read to the translated version.
 
-* <a href="https://j32u4ukh.github.io/SLAM13/class1.html">Class 1: 概論</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/class1.html">Class 1: SLAM</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class2.html">Class 2: 前端(視覺里程計)</a>
-* <a href="https://j32u4ukh.github.io/SLAM13/class3.html">Class 3: 後端</a>
-* <a href="https://j32u4ukh.github.io/SLAM13/class4.html">Class 4: 回路檢測 & 建圖</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/class3.html">Class 3: 後端(回路檢測)</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/class4.html">Class 4: 建圖 & 整體流程</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/class5.html">Class 5: (相機)運動</a>

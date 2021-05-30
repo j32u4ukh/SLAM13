@@ -19,7 +19,7 @@
 
 ### 三角測量
 
-![三角測量]("image/triangulation.png")
+![三角測量](image/triangulation.png)
 
 透過不同位置對同一路標點進行觀察，從觀察到的位置推斷路標點的距離。
 
