@@ -10,4 +10,5 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 * <a href="https://j32u4ukh.github.io/SLAM13/class2.html">Class 2: 前端(視覺里程計)</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class3.html">Class 3: 後端(回路檢測)</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class4.html">Class 4: 建圖 & 整體流程</a>
-* <a href="https://j32u4ukh.github.io/SLAM13/class5.html">Class 5: (相機)運動</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/class5.html">Class 5: 影像間匹配點</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/class6.html">Class 6: (相機)運動</a>
