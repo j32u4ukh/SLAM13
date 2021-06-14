@@ -21,19 +21,20 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 
 * 前端(主題類以外)
 * 前端：特徵點法
-* 前端：直接法
 * 前端：SIFT
 * 前端：FAST
-* 前端：ORB、BRIEF
-* 前端：Brute-Force Matcher
-* 前端：快速近似最近鄰(FLANN)
-* 前端：ICP
+* 前端：ORB
+* 前端：特徵比對
+* 前端：八點法
+* 前端：單應矩陣
 * 前端：三角測量
-* 前端：SVD
+
+* 前端：直接法
+* 前端：ICP
 * 前端：Bundle Adjustment(BA)
 * 前端：針孔相機模型
 * 前端：位姿圖
-* 前端：極線搜索
+* 前端：對極幾何
 
 ---
 * 後端(主題類以外)
@@ -68,10 +69,9 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 * 流形
 * 實對稱矩陣
 * PnP
-* RANSAC Direct Linear Transform(DLT)  
 * 均勻-高斯混合分布
 * 矩陣微分
-* 單應矩陣、單應性變換
+* 單應性變換
 * KD Tree
 * 奇異矩陣
 * 病態矩陣 
@@ -87,9 +87,6 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 * 李群
 * 李代數
 * 轉換(歐式轉換、相似轉換、仿射轉換、射影轉換)
-* 對極(Epipolar)約束
-* 基礎矩陣、本質矩陣
-* 八點法
 * 左右目視差
 
 後端優化將狀態量視為分佈來估計，實際上估計與更新是怎麼運作的呢？
