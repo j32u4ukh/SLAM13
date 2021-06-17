@@ -8,8 +8,9 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 
 * <a href="https://j32u4ukh.github.io/SLAM13/class1.html">Class 1: SLAM</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class2.html">Class 2: 前端(視覺里程計)</a>
-* <a href="https://j32u4ukh.github.io/SLAM13/class3.html">Class 3: 後端(回路檢測)</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/class3.html">Class 3: 後端 & 回路檢測</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class4.html">Class 4: 建圖(概述) & 整體流程</a>
+
 * <a href="https://j32u4ukh.github.io/SLAM13/class5.html">Class 5: 影像間匹配點</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class6.html">Class 6: (相機)運動</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class7.html">Class 7: 估計空間點的位置</a>
@@ -17,7 +18,7 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 * <a href="https://j32u4ukh.github.io/SLAM13/class9.html">Class 9: 回路檢測</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/class10.html">Class 10: 建圖</a>
 
-# 待編輯主題
+# 主題式章節
 
 * 前端(主題類以外)
 * 前端：特徵點法
@@ -25,37 +26,44 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 * 前端：FAST
 * 前端：ORB
 * 前端：特徵比對
+* 前端：對極幾何
 * 前端：八點法
 * 前端：單應矩陣
 * 前端：三角測量
-
-* 前端：直接法
+* 前端：PnP
 * 前端：ICP
-* 前端：Bundle Adjustment(BA)
+* 前端：直接法
+* 前端：光流法
 * 前端：針孔相機模型
-* 前端：位姿圖
-* 前端：對極幾何
+* 前端：位姿
+* 前端：旋轉
+* 前端：李群
+* 前端：李代數
+* 前端：轉換
+* 前端：左右目視差
+* 前端：極線搜索
+* 前端：區塊比對
 
 ---
 * 後端(主題類以外)
-* 後端：極線
-* 後端：逆深度
-* 後端：區塊比對
-* 後端：最大後驗機率
-* 後端：最大似然估計
+* 後端：Bundle Adjustment(BA)
+* 後端：位姿圖
+* 後端：SLAM 模型
 * 後端：最小平方法
-* 後端：馬哈拉諾比斯距離(Mahalanobis)
-* 後端：非線性最小平方法
-* 後端：最速下降法
-* 後端：牛頓法
-* 後端：列文伯格-馬夸特方法
+* 後端：梯度法
 * 後端：高斯牛頓法
-* 後端：漸進式狀態估計
+* 後端：列文伯格-馬夸特方法
+* 後端：擴充卡爾曼濾波(EKF)
+* 後端：非線性最佳化
+
+* 後端：逆深度
+* 後端：馬哈拉諾比斯距離(Mahalanobis)
 * 後端：滑動視窗濾波(SWF)、Schur 、邊緣
 
 ---
 * 回路檢測(主題類以外)
 * 回路檢測：詞袋模型
+* 回路檢測：字典
 
 ---
 * 建圖(主題類以外)
@@ -64,11 +72,8 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 
 ---
 * 像素梯度問題
-* 卡爾曼濾波、擴充卡爾曼濾波
-* 滑動視窗濾波(SWF)
 * 流形
 * 實對稱矩陣
-* PnP
 * 均勻-高斯混合分布
 * 矩陣微分
 * 單應性變換
@@ -79,14 +84,5 @@ I'll try to record the content of SLAM that I started to learn from February 27 
 * 吳消去法
 * 鄰接矩陣(adjacency matrix)
 * 位元元姿
-* fabmap
-* chou-liu tree
-* k-means、k-means++
-* 位姿
-* 旋轉
-* 李群
-* 李代數
-* 轉換(歐式轉換、相似轉換、仿射轉換、射影轉換)
-* 左右目視差
 
 後端優化將狀態量視為分佈來估計，實際上估計與更新是怎麼運作的呢？

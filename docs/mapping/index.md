@@ -1,27 +1,6 @@
 # 建圖
 
-將觀測到的影像轉換為模型，大致可分為『度量地圖(Metric Map)』和『拓樸地圖(Topological Map)』。
-
-## 度量地圖(Metric Map)
-
-強調精確表示地圖中物體的位置關係，又分為『稀疏(Sparse)』和『稠密(Dense)』。
-
-* 稀疏地圖：由路標所組成的地圖，非路標處則忽略。
-* 稠密地圖：注重建模所有看到的東西，導航時才不會撞上兩個路標之間的牆壁。
-
-以 小方塊/體素(Voxel) 的形式來表示 3D 度量地圖。一般含有 1. 佔據 2. 空閒 3. 未知 三種狀態。
-
-可用於各種導航演算法，如 A*, D* 等。
-
-## 拓樸地圖(Topological Map)
-
-強調地圖元素之間的關係，是由『節點』和『邊』組成的『圖(Graph)』。
-
-只關注節點之間的連通性，只考慮 A, B 是否相通，不考慮如何由 A 到 B。
-
---- 
-
-根據不同應用有不同的方式來進行建圖，可能應用有下列幾項：
+將觀測到的影像轉換為模型，根據不同應用有不同的方式來進行建圖，可能應用有下列幾項：
 
 1. 定位：利用全域的描述子資訊，知道相機當前在地圖中的哪裡。甚至還能把地圖儲存下來，下一次執行也能知道相機的位置，只須對地圖進行一次建模。
 
@@ -74,10 +53,7 @@
 八叉樹：把『將一個方塊分成同樣大小的八個』這件事，看成『從一個節點展開成八個子節點』。
 當某個方塊的所有子節點都被佔據或都沒被佔據，就**沒有必要展開這個節點**。
 
-<table>
-  <tr>
-    <td><a href="https://j32u4ukh.github.io/SLAM13/class9.html">上一篇</a></td>
-    <td><a href="https://j32u4ukh.github.io/SLAM13/">首頁</a></td>
-    <td><a href="https://j32u4ukh.github.io/SLAM13/class11.html">下一篇</a></td>
-  </tr>
-</table>
+* <a href="https://j32u4ukh.github.io/SLAM13/mapping/nonlinear_optimization.html">非線性最佳化</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/mapping/octo_map.html">八叉樹地圖</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/mapping/navigation_algorithm.html">導航演算法</a>
+
