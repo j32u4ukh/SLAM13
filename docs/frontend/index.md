@@ -21,7 +21,7 @@
 * <a href="https://j32u4ukh.github.io/SLAM13/frontend/lucas_kanade.html">光流法</a>
 
 * <a href="https://j32u4ukh.github.io/SLAM13/frontend/pinhole_camera_model.html">針孔相機模型</a>
-* <a href="https://j32u4ukh.github.io/SLAM13/frontend/rotate.html">旋轉</a>
+* <a href="https://j32u4ukh.github.io/SLAM13/frontend/motion.html">運動</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/frontend/pose.html">位姿</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/frontend/lie_group.html">李群</a>
 * <a href="https://j32u4ukh.github.io/SLAM13/frontend/lie_algebra.html">李代數</a>
