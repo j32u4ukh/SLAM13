@@ -55,6 +55,7 @@ void eigenMatrix(){
     
     // 利用（）存取矩陣中的元素
     std::cout << "print matrix_23:" << std::endl;
+
     for(int i = 0; i < 2; i++){
         
         for(int j = 0; j < 3; j++){            
@@ -140,7 +141,6 @@ void eigenMatrix(){
     << 1000 * (clock() - time_stt) / (double) CLOCKS_PER_SEC << "ms" << std::endl;
     std::cout << "x = " << x.transpose() << std::endl;
 
-    
     time_stt = clock();
     
     // 對於正定矩陣，還可以用 cholesky 分解來解方程
