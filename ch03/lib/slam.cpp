@@ -173,11 +173,11 @@ void eigenGeometry(){
     // 用 AngleAxis 可以進行坐標變換
     Eigen::Vector3d v(1, 0, 0);
     Eigen::Vector3d v_rotated = rotation_vector * v;    
-    std::cout << "(1,0,0) after rotation (by angle axis) = " << v_rotated.transpose() << std::endl;
+    std::cout << "(1, 0, 0) after rotation (by angle axis) = " << v_rotated.transpose() << std::endl;
     
     // 或者用旋轉矩陣
     v_rotated = rotation_matrix * v;
-    std::cout << "(1,0,0) after rotation (by matrix) = " << v_rotated.transpose() << std::endl;
+    std::cout << "(1, 0, 0) after rotation (by matrix) = " << v_rotated.transpose() << std::endl;
     
     // 歐拉角: 可以將旋轉矩陣直接轉換成歐拉角
     // eulerAngles: 指定旋轉軸的順序, 形成 ZYX 順序，即 yaw-pitch-roll 順序
@@ -187,7 +187,7 @@ void eigenGeometry(){
     // 歐氏變換矩陣使用 Eigen::Isometry
     // 雖然稱為3d，實質上是4＊4 的矩陣(第4列為 (0, 0, 0, 1) <- 形成齊次座標形式)
     // 實際宣告為 Transform<double, 3, 1> 應該是針對旋轉矩陣，平移的部份透過 pretranslate 另外設置
-    Eigen::Isometry3d T = Eigen::Isometry3d::Identity();    
+    Eigen::Isometry3d T = Eigen::Isometry3d::Identity();   
     
     // 按照rotation_vector進行旋轉
     T.rotate(rotation_vector);
@@ -207,7 +207,7 @@ void eigenGeometry(){
     // 可以直接把 AngleAxis 賦值給四元數，反之亦然
     Eigen::Quaterniond q = Eigen::Quaterniond(rotation_vector);
     
-    // 請注意 coeffs 的順序是 (x,y,z,w), w為實部，前三者為虛部
+    // 請注意 coeffs 的順序是 (x, y, z, w), w 為實部，前三者為虛部
     std::cout << "quaternion from rotation vector = " << q.coeffs().transpose() << std::endl; 
     
     // 也可以把旋轉矩陣賦給它
@@ -314,8 +314,8 @@ void visualizeGeometry(){
         
         for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; j++){
-                R.matrix(i, j) = m(j, i);                
-            }            
+                R.matrix(i, j) = m(j, i);
+            }
         }
         
         // 呈現旋轉矩陣

@@ -64,7 +64,7 @@ R^-1 * a' = R^T * a' = a
 
 ![轉換矩陣](../image/formula3_11.png)
 
-同樣有特殊的結構：左上為旋轉矩陣，右上為平移向量，左下為 0 向量，右下為 1。這種矩陣又被稱為『特殊歐式群(Special Euclidean Group)』。
+同樣有特殊的結構：左上為旋轉矩陣，右上為平移向量，左下為 0 向量，右下為 1。這種矩陣又被稱為『特殊歐式群(Special Euclidean Group, SE)』。
 
 ![轉換矩陣](../image/formula3_13.png)
 
@@ -228,6 +228,10 @@ p = [0, x, y, z]^T = [0, v]^T
 ![射影轉換](../image/formula3_47.png)
 
 ![常見變換的性質比較](../image/table3_1.png)
+
+---
+
+描述旋轉的『特殊正交群(Special Orthogonal Group，SO)』，以及描述轉換的『特殊歐式群(Special Euclidean Group, SE)』，皆屬於『李群』的一種。
 
 ---
 
