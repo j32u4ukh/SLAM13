@@ -35,10 +35,14 @@ class Camera {
         return pose_;         
     }
 
+    // 相機內參矩陣
     // return intrinsic matrix
     Mat33 K() const {
         Mat33 k;
-        k << fx_, 0, cx_, 0, fy_, cy_, 0, 0, 1;
+        k << fx_,   0, cx_, 
+               0, fy_, cy_,
+               0,   0,   1;
+
         return k;
     }
 

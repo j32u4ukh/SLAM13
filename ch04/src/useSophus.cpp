@@ -16,10 +16,12 @@ int main(int argc, char **argv) {
     cout << "angle_axisd: " << angle_axisd.angle() << "\n" << angle_axisd.axis() << endl;
     
     Matrix3d R = angle_axisd.toRotationMatrix();
+
     // 或者四元數
     Quaterniond q(R);
     Sophus::SO3d SO3_R(R);              // Sophus::SO3d可以直接從旋轉矩陣構造
     Sophus::SO3d SO3_q(q);              // 也可以通過四元數構造
+
     // 二者是等價的
     cout << "SO(3) from matrix:\n" << SO3_R.matrix() << endl;
     cout << "SO(3) from quaternion:\n" << SO3_q.matrix() << endl;
@@ -35,11 +37,11 @@ int main(int argc, char **argv) {
     Sophus::SO3d SO3_recover = Sophus::SO3d::exp(so3);
     cout << "SO3 recover:\n" << SO3_recover.matrix() << endl;
 
-    // 相對的，vee為反對稱到向量
+    // 相對的，vee 為反對稱到向量
     cout << "so3 hat vee= " << Sophus::SO3d::vee(Sophus::SO3d::hat(so3)).transpose() << endl;
 
     // 增量擾動模型的更新
-    Vector3d update_so3(1e-4, 0, 0); //假設更新量為這麽多
+    Vector3d update_so3(1e-4, 0, 0); // 假設更新量為這麽多
     Sophus::SO3d SO3_updated = Sophus::SO3d::exp(update_so3) * SO3_R;
     cout << "SO3 updated = \n" << SO3_updated.matrix() << endl;
 

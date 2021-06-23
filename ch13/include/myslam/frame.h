@@ -89,7 +89,7 @@ public:
         pose_ = pose;
     }
 
-    /// 設置關鍵幀並分配並鍵幀id
+    // 設置『關鍵幀』並分配關鍵幀的 id（factory_id）
     void SetKeyFrame();
 
     /// 工廠構建模式，分配id 

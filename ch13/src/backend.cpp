@@ -13,6 +13,38 @@ namespace myslam {
 
 Backend::Backend() {
     backend_running_.store(true);
+
+    // std::thread 參考：https://shengyu7697.github.io/std-thread/
+    /* 在一個 class 的 member function 裡面，事實上都會比原本的參數再多一個隱藏變數 this,
+    this 是一個 constant pointer 指向 call 這個 function 的 object 
+
+    class Simple
+    {
+        private:
+            int m_id;
+
+        public:
+            Simple(int id)
+            {
+                setID(id);
+            }
+
+            void setID(int id) { m_id = id; }
+            int getID() { return m_id; }
+    };
+
+    compiler 會把一個 class 的 member function 多一個變數 實際上的 setID() 的 signature 變成這樣
+
+    void setID(Simple* const this, int id) { this->m_id = id; }
+
+    Q1: Simple* const this?? const 不是不可以變的意思嗎?
+    A1: const 擺在這裡代表 this 是一個 const pointer 代表說這個 pointer 只能指到一個固定的 address，
+    指的地方不能改。那如果 const 擺前面 const Simple* this 那就是 this 的值不能改。
+    
+    再具體一點 如果 this 是一個房子的地址，前者是地址不能變，後者是房子裡面住的人不能變。
+
+    參考：https://www.jyt0532.com/2017/01/08/bind/
+    */
     backend_thread_ = std::thread(std::bind(&Backend::BackendLoop, this));
 }
 
@@ -32,7 +64,7 @@ void Backend::BackendLoop() {
         std::unique_lock<std::mutex> lock(data_mutex_);
         map_update_.wait(lock);
 
-        /// 後端僅優化激活的Frames和Landmarks
+        /// 後端僅優化激活的 Frames 和 Landmarks
         Map::KeyframesType active_kfs = map_->GetActiveKeyFrames();
         Map::LandmarksType active_landmarks = map_->GetActiveMapPoints();
         Optimize(active_kfs, active_landmarks);

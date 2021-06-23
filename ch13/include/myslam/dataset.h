@@ -20,10 +20,12 @@ class Dataset {
     /// 初始化，返回是否成功
     bool Init();
 
+    // 透過 current_image_index_ 依序取得下一幀的左右圖像
     /// create and return the next frame containing the stereo images
     Frame::Ptr NextFrame();
 
     /// get camera by id
+    // camera_id：相機陣列的索引值
     Camera::Ptr GetCamera(int camera_id) const {
         return cameras_.at(camera_id);
     }

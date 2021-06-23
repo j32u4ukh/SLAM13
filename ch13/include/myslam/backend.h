@@ -62,7 +62,7 @@ class Backend {
     std::condition_variable map_update_;
     
     /* 多個執行緒同時存取 backend_running_ 會造成資料不正確，一般應透過 std::mutex 來上鎖，以確保存取順序。
-     * 而使用 std::atomic 可以不上鎖就達到相同的效果，而且效率更加。
+     * 而使用 std::atomic 可以不上鎖就達到相同的效果，而且效率更佳。
      * 參考：https://shengyu7697.github.io/blog/2020/04/13/std-atomic/
      */
     std::atomic<bool> backend_running_;

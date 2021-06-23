@@ -8,8 +8,10 @@ using namespace std;
 
 namespace myslam {
 
+// Kitti 數據集
 Dataset::Dataset(const std::string& dataset_path) : dataset_path_(dataset_path) {}
 
+// 初始化相機
 bool Dataset::Init() {
     // read camera intrinsics and extrinsics
     ifstream fin(dataset_path_ + "/calib.txt");
@@ -19,6 +21,7 @@ bool Dataset::Init() {
         return false;
     }
 
+    // 4 個相機
     for (int i = 0; i < 4; ++i) {
         char camera_name[3];
         
@@ -52,6 +55,7 @@ bool Dataset::Init() {
     return true;
 }
 
+// 透過 current_image_index_ 依序取得下一幀的左右圖像
 Frame::Ptr Dataset::NextFrame() {
     boost::format fmt("%s/image_%d/%06d.png");
     cv::Mat image_left, image_right;
@@ -69,14 +73,19 @@ Frame::Ptr Dataset::NextFrame() {
         return nullptr;
     }
 
+    // 縮放為原始尺寸的一半（應該是可以減少計算量）
     cv::Mat image_left_resized, image_right_resized;
     cv::resize(image_left, image_left_resized, cv::Size(), 0.5, 0.5, cv::INTER_NEAREST);
     cv::resize(image_right, image_right_resized, cv::Size(), 0.5, 0.5, cv::INTER_NEAREST);
 
+    // 產生 Frame 並分配 id 以區別不同 Frame
     auto new_frame = Frame::CreateFrame();
     new_frame->left_img_ = image_left_resized;
     new_frame->right_img_ = image_right_resized;
+
+    // 更新 current_image_index_ 以取得下一幀的圖像
     current_image_index_++;
+
     return new_frame;
 }
 
