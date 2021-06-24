@@ -44,7 +44,7 @@ struct Feature {
     // 是否為異常點
     bool is_outlier_ = false;     
     
-    // 標識是否提在左圖，false為右圖
+    // 標識是否提在左圖，false 為右圖
     bool is_on_left_image_ = true;  
 
    public:

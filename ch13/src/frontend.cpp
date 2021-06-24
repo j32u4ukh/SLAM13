@@ -113,7 +113,8 @@ int Frontend::FindFeaturesInRight() {
 
         kp->map_point_ 為 weak_ptr 要取得 MapPoint，而 MapPoint 為 shared_ptr，因此這裡要使用 lock()
 
-        參考：https://medium.com/fcamels-notes/gcc-4-8-4-weak-ptr-lock-%E7%9A%84%E5%AF%A6%E4%BD%9C-a37fd284dc8
+        參考：https://medium.com/fcamels-notes/gcc-4-8-4-weak-ptr-lock-%E7%9A%84%E5%AF%A6%E4%BD%9C
+        -a37fd284dc8
         */
         auto mp = kp->map_point_.lock();
         
@@ -131,6 +132,7 @@ int Frontend::FindFeaturesInRight() {
     std::vector<uchar> status;
     Mat error;
     
+    // kps_right：輸入的標定圖像的特徵點（可以是其他特徵點檢測方法找到的點） 
     cv::calcOpticalFlowPyrLK(
         current_frame_->left_img_, current_frame_->right_img_, kps_left,
         kps_right, status, error, cv::Size(11, 11), 3,
