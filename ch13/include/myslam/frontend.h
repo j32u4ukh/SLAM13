@@ -129,7 +129,7 @@ class Frontend {
     std::shared_ptr<Backend> backend_ = nullptr;
     std::shared_ptr<Viewer> viewer_ = nullptr;
 
-    // 當前幀與上一幀的相對運動，用於估計當前幀pose初值
+    // 當前幀與上一幀的相對運動，用於估計當前幀 pose 初值
     SE3 relative_motion_;  
 
     // inliers, used for testing new keyframes

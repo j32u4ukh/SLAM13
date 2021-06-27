@@ -51,6 +51,8 @@ bool Frontend::StereoInit() {
         return false;
     }
 
+    // 特徵數量大於設定的數量，才會進入 BuildInitMap，進而將 current_frame_ 設為 key frame
+    // 目前看起來 BuildInitMap 永遠返回 true，沒有 false 或是跳出例外等情況。
     bool build_map_success = BuildInitMap();
     
     if (build_map_success) {
@@ -63,6 +65,7 @@ bool Frontend::StereoInit() {
         
         return true;
     }
+
     return false;
 }
 
@@ -179,16 +182,20 @@ bool Frontend::BuildInitMap() {
 
         if (triangulation(poses, points, pworld) && pworld[2] > 0) {
             auto new_map_point = MapPoint::CreateNewMappoint();
+
             new_map_point->SetPos(pworld);
             new_map_point->AddObservation(current_frame_->features_left_[i]);
             new_map_point->AddObservation(current_frame_->features_right_[i]);
+
             current_frame_->features_left_[i]->map_point_ = new_map_point;
             current_frame_->features_right_[i]->map_point_ = new_map_point;
             cnt_init_landmarks++;
+
             map_->InsertMapPoint(new_map_point);
         }
     }
     
+    // 特徵點數量超過設定的數量，才會進入此函式，並在此被設為 KeyFrame
     current_frame_->SetKeyFrame();
     map_->InsertKeyFrame(current_frame_);
     backend_->UpdateMap();
@@ -200,25 +207,42 @@ bool Frontend::BuildInitMap() {
 }
 
 bool Frontend::Track() {
+    // 若有 last_frame_
     if (last_frame_) {
+        // current_frame_ 被新增時沒有 pose 的數值，若有前一幀的數據，則利用它估計 current_frame_ 的初始值
+        // 若沒有前一幀的第一幀，會在 FrontendStatus::INITING 階段被初始化
+        // relative_motion_ = current_frame_->Pose() * last_frame_->Pose().inverse()
+        // 又，這裡的 last_frame_ 為計算 relative_motion_ 時的 current_frame_
+        // 因此，實際上相當於 current_frame_->Pose() * last_frame_->Pose().inverse() * current_frame_->Pose()
         current_frame_->SetPose(relative_motion_ * last_frame_->Pose());
     }
 
     int num_track_last = TrackLastFrame();
+
+    // 扣除離群點後的特徵數量
     tracking_inliers_ = EstimateCurrentPose();
 
+    // 追蹤到的特徵大於 num_features_tracking_
     if (tracking_inliers_ > num_features_tracking_) {
         // tracking good
         status_ = FrontendStatus::TRACKING_GOOD;
-    } else if (tracking_inliers_ > num_features_tracking_bad_) {
+    } 
+    
+    // 追蹤到的特徵小於 num_features_tracking_，但大於 num_features_tracking_bad_
+    else if (tracking_inliers_ > num_features_tracking_bad_) {
         // tracking bad
         status_ = FrontendStatus::TRACKING_BAD;
-    } else {
+    } 
+    
+    // 追蹤到的特徵小於 num_features_tracking_bad_
+    else {
         // lost
         status_ = FrontendStatus::LOST;
     }
 
     InsertKeyframe();
+
+    // last_frame_ 到 current_frame_ 的轉換矩陣
     relative_motion_ = current_frame_->Pose() * last_frame_->Pose().inverse();
 
     if (viewer_){
@@ -232,16 +256,18 @@ int Frontend::TrackLastFrame() {
     // use LK flow to estimate points in the right image
     std::vector<cv::Point2f> kps_last, kps_current;
     
+    // 遍歷前一幀左圖像的特徵點
     for (auto &kp : last_frame_->features_left_) {
+        // 前一幀左圖像的特徵點的位置
+        kps_last.push_back(kp->position_.pt);
+
         if (kp->map_point_.lock()) {
             // use project point
             auto mp = kp->map_point_.lock();
             auto px = camera_left_->world2pixel(mp->pos_, current_frame_->Pose());
-            kps_last.push_back(kp->position_.pt);
             kps_current.push_back(cv::Point2f(px[0], px[1]));
             
         } else {
-            kps_last.push_back(kp->position_.pt);
             kps_current.push_back(kp->position_.pt);            
         }
     }
@@ -256,11 +282,18 @@ int Frontend::TrackLastFrame() {
 
     int num_good_pts = 0;
 
+    // 更新 current_frame_ 左圖向上找到的特徵點
     for (size_t i = 0; i < status.size(); ++i) {
+
+        // 若光流法有追蹤到新圖像中的特徵點
         if (status[i]) {
             cv::KeyPoint kp(kps_current[i], 7);
             Feature::Ptr feature(new Feature(current_frame_, kp));
+
+            // 有追蹤到的同一個空間點
+            // 因此 current_frame_ 的第 i 個 feature 的空間點 和前一幀的第 i 個 feature 的空間點
             feature->map_point_ = last_frame_->features_left_[i]->map_point_;
+
             current_frame_->features_left_.push_back(feature);
             num_good_pts++;
         }
@@ -294,20 +327,28 @@ int Frontend::EstimateCurrentPose() {
     int index = 1;
     std::vector<EdgeProjectionPoseOnly *> edges;
     std::vector<Feature::Ptr> features;
+
+    std::vector<std::shared_ptr<myslam::Feature>> left_current_features;
+    left_current_features = current_frame_->features_left_;
     
-    for (size_t i = 0; i < current_frame_->features_left_.size(); ++i) {
-        auto mp = current_frame_->features_left_[i]->map_point_.lock();
+    for (size_t i = 0; i < left_current_features.size(); ++i) {
+        auto mp = left_current_features[i]->map_point_.lock();
         
         if (mp) {
-            features.push_back(current_frame_->features_left_[i]);
+            features.push_back(left_current_features[i]);
+
             EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(mp->pos_, K);
             edge->setId(index);
             edge->setVertex(0, vertex_pose);
-            edge->setMeasurement(toVec2(current_frame_->features_left_[i]->position_.pt));
+            edge->setMeasurement(toVec2(left_current_features[i]->position_.pt));
             edge->setInformation(Eigen::Matrix2d::Identity());
+
+            // 穩健核心函數：避免在發生誤比對時，誤差值增長過快，導致該誤差對估計影響過大
             edge->setRobustKernel(new g2o::RobustKernelHuber);
+
             edges.push_back(edge);
             optimizer.addEdge(edge);
+
             index++;
         }
     }
@@ -319,28 +360,45 @@ int Frontend::EstimateCurrentPose() {
     for (int iteration = 0; iteration < 4; ++iteration) {
         vertex_pose->setEstimate(current_frame_->Pose());
         optimizer.initializeOptimization();
+
+        // 優化 10 次
         optimizer.optimize(10);
+
+        // 計算 outlier 個數
         cnt_outlier = 0;
 
         // count the outliers
+        // 優化完成後，對每一條邊都進行檢查
         for (size_t i = 0; i < edges.size(); ++i) {
             auto e = edges[i];
             
-            if (features[i]->is_outlier_) {
-                e->computeError();
-            }
+            // features[i]->is_outlier_ 預設為 false，因此不會呼叫到 computeError
+            // if (features[i]->is_outlier_) {
+            //     e->computeError();
+            // }
+            // 這裡應該所有 edge 都計算誤差，已修改為自己認為的版本
+            e->computeError();
             
+            /*
+            computeError 若未被呼叫，也無法利用 e->chi2() 來計算誤差分配的卡方值，
+            因為 e->chi2() 僅在 e->computeError() 後才有效。
+
+            同樣的，也無法將 features[i]->is_outlier_ 設置為 true
+
+            當誤差分配的卡方值大於設定的門檻，剔除誤差較大的邊（認爲是錯誤的邊），並設置 setLevel 爲 1，
+            即下次不再對該邊進行優化 
+             */ 
             if (e->chi2() > chi2_th) {
                 features[i]->is_outlier_ = true;
                 e->setLevel(1);
                 cnt_outlier++;
-                
-            } else {
-                features[i]->is_outlier_ = false;
-                e->setLevel(0);
-                
+            }             
+            else {
+                features[i]->is_outlier_ = false;                
+                e->setLevel(0);                
             };
 
+            // 前面幾次 iteration 已經離群點給移除，因此可不再需要使用 RobustKernel
             if (iteration == 2) {
                 e->setRobustKernel(nullptr);
             }
@@ -357,21 +415,24 @@ int Frontend::EstimateCurrentPose() {
 
     for (auto &feat : features) {
         if (feat->is_outlier_) {
+            // reset()：手動釋放記憶體
             feat->map_point_.reset();
             
             // maybe we can still use it in future
             feat->is_outlier_ = false;  
         }
     }
+
     return features.size() - cnt_outlier;
 }
 
 bool Frontend::InsertKeyframe() {
     if (tracking_inliers_ >= num_features_needed_for_keyframe_) {
-        // still have enough features, don't insert keyframe
+        // still have enough features, but won't insert keyframe
         return false;
     }
     
+    // 有效特徵點多於門檻 num_features_needed_for_keyframe_，將此頁框設為 KeyFrame
     // current frame is a new keyframe
     current_frame_->SetKeyFrame();
     map_->InsertKeyFrame(current_frame_);
@@ -379,17 +440,23 @@ bool Frontend::InsertKeyframe() {
     LOG(INFO) << "Set frame " << current_frame_->id_ << " as keyframe "
               << current_frame_->keyframe_id_;
 
+    // 更新觀測到 MapPoint 的 Feature
     SetObservationsForKeyFrame();
-    DetectFeatures();  // detect new features
+
+    // detect new features
+    DetectFeatures();  
 
     // track in right image
     FindFeaturesInRight();
+
     // triangulate map points
     TriangulateNewPoints();
+
     // update backend because we have a new keyframe
     backend_->UpdateMap();
 
     if (viewer_){
+        // 更新關鍵頁框與路標點的字典（用於呈現）
         viewer_->UpdateMap();
     }
 
@@ -410,10 +477,15 @@ int Frontend::TriangulateNewPoints() {
     std::vector<SE3> poses{camera_left_->pose(), camera_right_->pose()};
     SE3 current_pose_Twc = current_frame_->Pose().inverse();
     int cnt_triangulated_pts = 0;
+
     for (size_t i = 0; i < current_frame_->features_left_.size(); ++i) {
+
+        // .expired() 查看 weak_ptr 使否可用
         if (current_frame_->features_left_[i]->map_point_.expired() &&
             current_frame_->features_right_[i] != nullptr) {
+                
             // 左圖的特征點未關聯地圖點且存在右圖匹配點，嘗試三角化
+            // 根據相機內參，將像素點轉換成左右相機在成像平面上的點（深度為 1）
             std::vector<Vec3> points{
                 camera_left_->pixel2camera(
                     Vec2(current_frame_->features_left_[i]->position_.pt.x,
@@ -421,24 +493,33 @@ int Frontend::TriangulateNewPoints() {
                 camera_right_->pixel2camera(
                     Vec2(current_frame_->features_right_[i]->position_.pt.x,
                          current_frame_->features_right_[i]->position_.pt.y))};
+
             Vec3 pworld = Vec3::Zero();
 
+            // 利用三角測量，計算空間點 pworld
             if (triangulation(poses, points, pworld) && pworld[2] > 0) {
                 auto new_map_point = MapPoint::CreateNewMappoint();
-                pworld = current_pose_Twc * pworld;
-                new_map_point->SetPos(pworld);
-                new_map_point->AddObservation(
-                    current_frame_->features_left_[i]);
-                new_map_point->AddObservation(
-                    current_frame_->features_right_[i]);
 
+                // current_pose_Tw：從『相機座標系』到『世界座標系』
+                pworld = current_pose_Twc * pworld;
+
+                new_map_point->SetPos(pworld);
+
+                // MapPoint 會紀錄觀測到自己的 Feature
+                new_map_point->AddObservation(current_frame_->features_left_[i]);
+                new_map_point->AddObservation(current_frame_->features_right_[i]);
+
+                // Feature 也會紀錄自己觀測到的 MapPoint
                 current_frame_->features_left_[i]->map_point_ = new_map_point;
                 current_frame_->features_right_[i]->map_point_ = new_map_point;
+
                 map_->InsertMapPoint(new_map_point);
+
                 cnt_triangulated_pts++;
             }
         }
     }
+
     LOG(INFO) << "new landmarks: " << cnt_triangulated_pts;
     return cnt_triangulated_pts;
 }

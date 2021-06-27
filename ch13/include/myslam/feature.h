@@ -18,6 +18,8 @@ struct MapPoint;
 /**
  * 2D 特征點
  * 在三角化之後會被關聯一個地圖點
+ * 
+ * Frame with cv::KeyPoint
  */
 struct Feature {
    public:

@@ -33,6 +33,7 @@ struct MapPoint {
     // being observed by feature matching algo.
     int observed_times_ = 0;  
     
+    // 觀測到這個 MapPoint 的所有 Feature（當要優化這些特徵時，可以進一步修正所對應的 MapPoint）
     std::list<std::weak_ptr<Feature>> observations_;
 
     MapPoint() {}

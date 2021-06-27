@@ -24,7 +24,16 @@ inline bool triangulation(const std::vector<SE3> &poses, const std::vector<Vec3>
     
     for (size_t i = 0; i < poses.size(); ++i) {
         Mat34 m = poses[i].matrix3x4();
+
+        /* Block of size (p, q), starting at (i, j) 
+
+        Version constructing a 'dynamic-size' block expression: matrix.block(i, j, p, q);
+        Version constructing a 'fixed-size' block expression: matrix.block<p, q>(i, j); */
+
+        // row 0, 2
         A.block<1, 4>(2 * i, 0) = points[i][0] * m.row(2) - m.row(0);
+
+        // row 1, 3
         A.block<1, 4>(2 * i + 1, 0) = points[i][1] * m.row(2) - m.row(1);
     }
     

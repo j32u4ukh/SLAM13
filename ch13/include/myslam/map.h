@@ -16,7 +16,11 @@ class Map {
    public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Map> Ptr;
+
+    // LandmarksType 為字典(key: unsigned long; value: MapPoint::Ptr)
     typedef std::unordered_map<unsigned long, MapPoint::Ptr> LandmarksType;
+
+    // KeyframesType 為字典(key: unsigned long; value: Frame::Ptr)
     typedef std::unordered_map<unsigned long, Frame::Ptr> KeyframesType;
 
     Map() {}
@@ -28,24 +32,28 @@ class Map {
     void InsertMapPoint(MapPoint::Ptr map_point);
 
     /// 獲取所有地圖點
+    // LandmarksType 為字典(key: unsigned long; value: MapPoint::Ptr)
     LandmarksType GetAllMapPoints() {
         std::unique_lock<std::mutex> lck(data_mutex_);
         return landmarks_;
     }
     
     /// 獲取所有關鍵幀
+    // KeyframesType 為字典(key: unsigned long; value: Frame::Ptr)
     KeyframesType GetAllKeyFrames() {
         std::unique_lock<std::mutex> lck(data_mutex_);
         return keyframes_;
     }
 
     /// 獲取激活地圖點
+    // LandmarksType 為字典(key: unsigned long; value: MapPoint::Ptr)
     LandmarksType GetActiveMapPoints() {
         std::unique_lock<std::mutex> lck(data_mutex_);
         return active_landmarks_;
     }
 
     /// 獲取激活關鍵幀
+    // KeyframesType 為字典(key: unsigned long; value: Frame::Ptr)
     KeyframesType GetActiveKeyFrames() {
         std::unique_lock<std::mutex> lck(data_mutex_);
         return active_keyframes_;
@@ -61,15 +69,19 @@ class Map {
     std::mutex data_mutex_;
     
     // all landmarks
+    // LandmarksType 為字典(key: unsigned long; value: MapPoint::Ptr)
     LandmarksType landmarks_; 
     
     // active landmarks
+    // LandmarksType 為字典(key: unsigned long; value: MapPoint::Ptr)
     LandmarksType active_landmarks_;  
     
     // all key-frames
+    // KeyframesType 為字典(key: unsigned long; value: Frame::Ptr)
     KeyframesType keyframes_;  
     
     // active key-frames
+    // KeyframesType 為字典(key: unsigned long; value: Frame::Ptr)
     KeyframesType active_keyframes_;  
 
     Frame::Ptr current_frame_ = nullptr;

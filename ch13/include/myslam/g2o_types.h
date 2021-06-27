@@ -32,6 +32,8 @@ class VertexPose : public g2o::BaseVertex<6, SE3> {
     virtual void oplusImpl(const double *update) override {
         Vec6 update_eigen;
         update_eigen << update[0], update[1], update[2], update[3], update[4], update[5];
+
+        // SE3::exp：李代數 轉 李群
         _estimate = SE3::exp(update_eigen) * _estimate;
     }
 
@@ -104,11 +106,13 @@ class EdgeProjection : public g2o::BaseBinaryEdge<2, Vec2, VertexPose, VertexXYZ
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
     /// 構造時傳入相機內外參
-    EdgeProjection(const Mat33 &K, const SE3 &cam_ext) : _K(K) {
-        _cam_ext = cam_ext;
+    EdgeProjection(const Mat33 &K, const SE3 &cam_ext) : _K(K), _cam_ext(cam_ext){
+        // _cam_ext = cam_ext;
     }
 
     virtual void computeError() override {
+        // typedef std::vector<Vertex*>  VertexContainer
+        // VertexContainer _vertices
         const VertexPose *v0 = static_cast<VertexPose *>(_vertices[0]);
         const VertexXYZ *v1 = static_cast<VertexXYZ *>(_vertices[1]);
         SE3 T = v0->estimate();

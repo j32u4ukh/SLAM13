@@ -28,8 +28,12 @@ void Viewer::AddCurrentFrame(Frame::Ptr current_frame) {
 void Viewer::UpdateMap() {
     std::unique_lock<std::mutex> lck(viewer_data_mutex_);
     assert(map_ != nullptr);
+
+    // 分別取得兩個字典（是否過於龐大？使用共通的字典或是更新時一起更新，是否會更好？）
     active_keyframes_ = map_->GetActiveKeyFrames();
     active_landmarks_ = map_->GetActiveMapPoints();
+
+    // map_updated_ 只在宣告時被設為 false，以及在此被設為 true，並未被其他地方所使用
     map_updated_ = true;
 }
 

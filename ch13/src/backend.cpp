@@ -65,33 +65,46 @@ void Backend::BackendLoop() {
         map_update_.wait(lock);
 
         /// 後端僅優化激活的 Frames 和 Landmarks
+        // KeyframesType 為字典(key: unsigned long; value: Frame::Ptr)
         Map::KeyframesType active_kfs = map_->GetActiveKeyFrames();
+
+        // LandmarksType 為字典(key: unsigned long; value: MapPoint::Ptr)
         Map::LandmarksType active_landmarks = map_->GetActiveMapPoints();
+
+        // 根據 KeyframesType 和 LandmarksType 對 keyframe 們的位姿估計進行優化
         Optimize(active_kfs, active_landmarks);
     }
 }
 
+// KeyframesType 為字典(key: unsigned long; value: Frame::Ptr)
+// LandmarksType 為字典(key: unsigned long; value: MapPoint::Ptr)
+// 批次對『Frame 的位姿估計 以及 路標點的位置』進行優化
 void Backend::Optimize(Map::KeyframesType &keyframes, Map::LandmarksType &landmarks) {
     // setup g2o
     typedef g2o::BlockSolver_6_3 BlockSolverType;
     typedef g2o::LinearSolverCSparse<BlockSolverType::PoseMatrixType> LinearSolverType;
     
     auto solver = new g2o::OptimizationAlgorithmLevenberg(
-        g2o::make_unique<BlockSolverType>(
-            g2o::make_unique<LinearSolverType>()));
+        g2o::make_unique<BlockSolverType>(g2o::make_unique<LinearSolverType>()));
     g2o::SparseOptimizer optimizer;
     optimizer.setAlgorithm(solver);
 
-    // pose 頂點，使用Keyframe id
+    // pose 頂點，使用 Keyframe id
     std::map<unsigned long, VertexPose *> vertices;
     unsigned long max_kf_id = 0;
+
+    // 遍歷 Frame 字典
     for (auto &keyframe : keyframes) {
         auto kf = keyframe.second;
+
         // camera vertex_pose
         VertexPose *vertex_pose = new VertexPose();  
         
         vertex_pose->setId(kf->keyframe_id_);
+
+        // 優化關鍵 Frame 的位姿
         vertex_pose->setEstimate(kf->Pose());
+
         optimizer.addVertex(vertex_pose);
         
         if (kf->keyframe_id_ > max_kf_id) {
@@ -101,7 +114,7 @@ void Backend::Optimize(Map::KeyframesType &keyframes, Map::LandmarksType &landma
         vertices.insert({kf->keyframe_id_, vertex_pose});
     }
 
-    // 路標頂點，使用路標id索引
+    // 路標頂點，使用路標 id 索引
     std::map<unsigned long, VertexXYZ *> vertices_landmarks;
 
     // K 和左右外參
@@ -117,60 +130,74 @@ void Backend::Optimize(Map::KeyframesType &keyframes, Map::LandmarksType &landma
     
     std::map<EdgeProjection *, Feature::Ptr> edges_and_features;
 
+    // 遍歷 MapPoint 字典
     for (auto &landmark : landmarks) {
         if (landmark.second->is_outlier_){
             continue;
         }
         
         unsigned long landmark_id = landmark.second->id_;
+
+        // 利用 MapPoint 取得 Feature 陣列
         auto observations = landmark.second->GetObs();
         
         for (auto &obs : observations) {
+            // 檢查是否可以取用該 Feature
             if (obs.lock() == nullptr){
                 continue;
             }
             
+            // 取得 Feature
             auto feat = obs.lock();
             
+            // 檢查是否可以取用含有該 Feature 的 Frame，以及該 Feature 是否可以取用
             if (feat->is_outlier_ || feat->frame_.lock() == nullptr){
                 continue;
             }
 
+            // 取得含有該 Feature 的 Frame
             auto frame = feat->frame_.lock();
             EdgeProjection *edge = nullptr;
             
             if (feat->is_on_left_image_) {
-                edge = new EdgeProjection(K, left_ext);
-                
+                edge = new EdgeProjection(K, left_ext);                
             } else {
-                edge = new EdgeProjection(K, right_ext);
-                
+                edge = new EdgeProjection(K, right_ext);                
             }
 
-            // 如果landmark還沒有被加入優化，則新加一個頂點
-            if (vertices_landmarks.find(landmark_id) ==
-                vertices_landmarks.end()) {
+            // 如果 landmark 還沒有被加入優化，則新加一個頂點
+            if (vertices_landmarks.find(landmark_id) == vertices_landmarks.end()) {
                 VertexXYZ *v = new VertexXYZ;
+
+                // 取得路標的 MapPoint 的位置點(Vec3)
                 v->setEstimate(landmark.second->Pos());
                 v->setId(landmark_id + max_kf_id + 1);
                 v->setMarginalized(true);
+
+                // std::map<unsigned long, VertexXYZ *> vertices_landmarks
                 vertices_landmarks.insert({landmark_id, v});
                 optimizer.addVertex(v);
             }
 
             edge->setId(index);
             
-            // pose
+            // edge->setVertex(int, Vertex*)
+            // pose VertexPose*
             edge->setVertex(0, vertices.at(frame->keyframe_id_));    
             
-            // landmark
+            // landmark VertexXYZ*
             edge->setVertex(1, vertices_landmarks.at(landmark_id)); 
             
             edge->setMeasurement(toVec2(feat->position_.pt));
             edge->setInformation(Mat22::Identity());
+
             auto rk = new g2o::RobustKernelHuber();
             rk->setDelta(chi2_th);
+
+            // 
             edge->setRobustKernel(rk);
+
+            // 
             edges_and_features.insert({edge, feat});
 
             optimizer.addEdge(edge);
@@ -181,11 +208,14 @@ void Backend::Optimize(Map::KeyframesType &keyframes, Map::LandmarksType &landma
 
     // do optimization and eliminate the outliers
     optimizer.initializeOptimization();
+
+    // 進行 10 次優化
     optimizer.optimize(10);
 
     int cnt_outlier = 0, cnt_inlier = 0;
     int iteration = 0;
     
+    // 尋找適當的卡方門檻值
     while (iteration < 5) {
         cnt_outlier = 0;
         cnt_inlier = 0;
@@ -203,16 +233,21 @@ void Backend::Optimize(Map::KeyframesType &keyframes, Map::LandmarksType &landma
         
         double inlier_ratio = cnt_inlier / double(cnt_inlier + cnt_outlier);
         
+        // inlier 比例足夠多時，表示卡方門檻值足夠大了
         if (inlier_ratio > 0.5) {
             break;
             
-        } else {
+        } 
+        
+        // inlier 數量不足，擴大卡方門檻值
+        else {
             chi2_th *= 2;
             iteration++;
             
         }
     }
 
+    // 移除 Feature 的離群值
     for (auto &ef : edges_and_features) {
         if (ef.first->chi2() > chi2_th) {
             ef.second->is_outlier_ = true;
@@ -221,18 +256,18 @@ void Backend::Optimize(Map::KeyframesType &keyframes, Map::LandmarksType &landma
             
         } else {
             ef.second->is_outlier_ = false;
-            
         }
     }
 
     LOG(INFO) << "Outlier/Inlier in optimization: " << cnt_outlier << "/"
               << cnt_inlier;
 
-    // Set pose and lanrmark position
+    // 更新關鍵頁框的位姿估計
     for (auto &v : vertices) {
         keyframes.at(v.first)->SetPose(v.second->estimate());
     }
     
+    // 更新路標點的 MapPoint 的位置
     for (auto &v : vertices_landmarks) {
         landmarks.at(v.first)->SetPos(v.second->estimate());
     }

@@ -51,7 +51,7 @@ public:
     unsigned long keyframe_id_ = 0;  // id of key frame
     bool is_keyframe_ = false;       // 是否為關鍵幀
     double time_stamp_;              // 時間戳，暫不使用
-    SE3 pose_;                       // Tcw 形式Pose
+    SE3 pose_;                       // Tcw 形式 Pose
     
     /* std::mutex 算是多執行緒中常用到的基本功能，mutex 用來上鎖一段多執行緒會交互存取的程式區塊，
      * 確保同一時間內只有一個執行緒能夠存取這段程式區塊，避免程式發生不預期的意外狀況

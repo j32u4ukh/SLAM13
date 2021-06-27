@@ -26,13 +26,14 @@ void Map::InsertKeyFrame(Frame::Ptr frame) {
     current_frame_ = frame;
     
     if (keyframes_.find(frame->keyframe_id_) == keyframes_.end()) {
+
         keyframes_.insert(make_pair(frame->keyframe_id_, frame));
         active_keyframes_.insert(make_pair(frame->keyframe_id_, frame));
         
     } else {
+
         keyframes_[frame->keyframe_id_] = frame;
-        active_keyframes_[frame->keyframe_id_] = frame;
-        
+        active_keyframes_[frame->keyframe_id_] = frame;        
     }
 
     // 關鍵幀僅保留 num_active_keyframes_ 個，數量超出時則刪除舊的關鍵幀
@@ -43,6 +44,7 @@ void Map::InsertKeyFrame(Frame::Ptr frame) {
 
 void Map::InsertMapPoint(MapPoint::Ptr map_point) {
     if (landmarks_.find(map_point->id_) == landmarks_.end()) {
+
         landmarks_.insert(make_pair(map_point->id_, map_point));
         active_landmarks_.insert(make_pair(map_point->id_, map_point));
         
@@ -68,6 +70,8 @@ void Map::RemoveOldKeyframe() {
             continue;
         }
         
+        // (kf.second->Pose() * Twc) current_frame_ 到 kf.second 的轉換矩陣
+        // log() 將前方的李群轉換為李代數，以計算向量
         auto dis = (kf.second->Pose() * Twc).log().norm();
         
         if (dis > max_dis) {
@@ -100,7 +104,14 @@ void Map::RemoveOldKeyframe() {
     // remove keyframe and landmark observation
     active_keyframes_.erase(frame_to_remove->keyframe_id_);
     
+    // Left
     for (auto feat : frame_to_remove->features_left_) {
+
+        /* 應該也需要？
+        if (feat == nullptr){
+            continue;
+        }
+        */
 
         auto mp = feat->map_point_.lock();
         
@@ -109,6 +120,7 @@ void Map::RemoveOldKeyframe() {
         }
     }
     
+    // Right
     for (auto feat : frame_to_remove->features_right_) {
 
         if (feat == nullptr){
